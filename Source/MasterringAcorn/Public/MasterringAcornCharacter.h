@@ -116,5 +116,22 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	//인벤토리를 위한 데이터
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GamePlay)
+	class UMasteringInventory* Inventory;
+
+	class AMasterringWeapon* EquippedWeaponActor;
+
+	void EquipWeapon(TSubclassOf<class AMasterringWeapon> Weapon);
+
+	FORCEINLINE class AMasterringWeapon* GetEquippedWeapon() const { return EquippedWeaponActor; }
+	FORCEINLINE class UMasteringInventory* GetInventory() const{ return Inventory; }
+
+
+	void SelectNextWeapon();
+	void SelectPreviousWeapon();
+
 };
 

@@ -11,6 +11,7 @@
 #include "GameFramework/InputSettings.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "MasteringInventory.h"
 
 // Sets default values
 AMasterringWeapon::AMasterringWeapon()
@@ -43,5 +44,40 @@ void AMasterringWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AMasterringWeapon::Fire(FRotator ControlRotation, class UAnimInstance* AnimInst,
+	class UMasteringInventory* Inventory)
+{
+	if (ProjectileClass != nullptr)
+	{
+		UWorld* const World = GetWorld();
+		if (World != nullptr)
+		{
+			const FVector SpawnLocation = ((MuzzleLocation != nullptr) ?
+				MuzzleLocation->GetComponentLocation() : GetActorLocation()) + 
+				ControlRotation.RotateVector(GunOffset);
+
+			FActorSpawnParameters ActorSpawnParms;
+			ActorSpawnParms.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+			World->SpawnActor<AMasterringAcornProjectile>(ProjectileClass,
+				SpawnLocation,
+				ControlRotation,
+				ActorSpawnParms);
+		}
+	}
+
+	if (FireSound != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());	
+	}
+
+	if (FireAnimation != nullptr)
+	{
+		AnimInst->Montage_Play(FireAnimation, 1.f);
+	}
+	Inventory->ChangeAmmo(GetClass(), -1);
 }
 

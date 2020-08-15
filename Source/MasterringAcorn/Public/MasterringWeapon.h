@@ -10,8 +10,8 @@ UCLASS()
 class MASTERRINGACORN_API AMasterringWeapon : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AMasterringWeapon();
 
@@ -19,32 +19,33 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	FVector GunOffset = FVector(100.f,0.0f,10.0f);
+		FVector GunOffset = FVector(100.f, 0.0f, 10.0f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	class USoundBase* FireSound;
+		class USoundBase* FireSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	class UAnimMontage* FireAnimation;
+		class UAnimMontage* FireAnimation;
 
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<class AMasterringAcornProjectile> ProjectileClass;
+		TSubclassOf<class AMasterringAcornProjectile> ProjectileClass;
 
 
 	/** Gun mesh: 1st person view (seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USkeletalMeshComponent* WeaponMesh;
+		class USkeletalMeshComponent* WeaponMesh;
 
 	/** Location on gun mesh where projectiles should spawn. */
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USceneComponent* MuzzleLocation;
+		class USceneComponent* MuzzleLocation;
 
-	
+	void Fire(FRotator ControlRotation, class UAnimInstance* AnimInst,
+		class UMasteringInventory* Inventory);
 
 };

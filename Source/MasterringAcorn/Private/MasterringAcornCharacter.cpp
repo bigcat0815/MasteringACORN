@@ -12,6 +12,10 @@
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 
+//인벤토리
+#include "MasteringInventory.h"
+#include "MasterringWeapon.h"
+
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
 //////////////////////////////////////////////////////////////////////////
@@ -82,6 +86,10 @@ AMasterringAcornCharacter::AMasterringAcornCharacter()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
+
+	//iventory
+	Inventory = CreateDefaultSubobject<UMasteringInventory>(TEXT("Inventory"));
+
 }
 
 void AMasterringAcornCharacter::BeginPlay()
@@ -102,6 +110,11 @@ void AMasterringAcornCharacter::BeginPlay()
 	{
 		VR_Gun->SetHiddenInGame(true, true);
 		Mesh1P->SetHiddenInGame(false, true);
+	}
+
+	if (Inventory != nullptr)
+	{
+		Inventory->SelectBestWeapon();
 	}
 }
 
@@ -136,10 +149,20 @@ void AMasterringAcornCharacter::SetupPlayerInputComponent(class UInputComponent*
 	PlayerInputComponent->BindAxis("TurnRate", this, &AMasterringAcornCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AMasterringAcornCharacter::LookUpAtRate);
+
+	PlayerInputComponent->BindAction("InventoryUp", IE_Pressed, this, &AMasterringAcornCharacter::SelectPreviousWeapon);
+	PlayerInputComponent->BindAction("InventoryDown", IE_Pressed, this, &AMasterringAcornCharacter::SelectNextWeapon);
+
 }
 
 void AMasterringAcornCharacter::OnFire()
 {
+	if (GetEquippedWeapon() != nullptr)
+	{
+		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+		GetEquippedWeapon()->Fire(GetControlRotation(), AnimInstance,Inventory);
+	}
+
 	// try and fire a projectile
 	//if (ProjectileClass != NULL)
 	//{
@@ -297,4 +320,46 @@ bool AMasterringAcornCharacter::EnableTouchscreenMovement(class UInputComponent*
 	}
 	
 	return false;
+}
+
+void AMasterringAcornCharacter::EquipWeapon(TSubclassOf<class AMasterringWeapon> Weapon)
+{
+	UWorld* World = GetWorld();
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	if (EquippedWeaponActor != nullptr)
+	{
+		World->DestroyActor(EquippedWeaponActor);
+	}
+
+	const FRotator SpawnRotation = GetActorRotation();
+	const FVector SpawnLocation = GetActorLocation();
+	FActorSpawnParameters ActorSpawnParmas;
+	ActorSpawnParmas.SpawnCollisionHandlingOverride = 
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	ActorSpawnParmas.Owner = this;
+
+	EquippedWeaponActor = Cast<AMasterringWeapon>(World->SpawnActor(
+		Weapon, &SpawnLocation, &SpawnRotation, ActorSpawnParmas));
+
+	if (EquippedWeaponActor != nullptr)
+	{
+		EquippedWeaponActor->AttachToComponent(Mesh1P, 
+			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+			TEXT("GripPoint"));
+	}
+}
+
+void AMasterringAcornCharacter::SelectNextWeapon()
+{
+	Inventory->SelectNextWeapon();
+}
+
+void AMasterringAcornCharacter::SelectPreviousWeapon()
+{
+	Inventory->SelectPreviousWeapon();
 }
