@@ -58,8 +58,9 @@ void UMasteringInventory::SelectBestWeapon()
 
 void UMasteringInventory::SelectWeapon(TSubclassOf<class AMasterringWeapon> Weapon)
 {
-	MyOwner->EquipWeapon(Weapon);
-	CurrentWeapon = Weapon;
+	//TEST 사용으로 중지
+	/*MyOwner->EquipWeapon(Weapon);
+	CurrentWeapon = Weapon;*/
 }
 
 void UMasteringInventory::AddWeapon(TSubclassOf<class AMasterringWeapon> Weapon,

@@ -13,8 +13,13 @@
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
 
 //인벤토리
-#include "MasteringInventory.h"
-#include "MasterringWeapon.h"
+//#include "MasteringInventory.h"
+//#include "MasterringWeapon.h"
+
+//인벤토리
+#include "MasteringInventoryTEST.h"
+#include "MasteringWeaponTEST.h"
+
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -88,7 +93,10 @@ AMasterringAcornCharacter::AMasterringAcornCharacter()
 	//bUsingMotionControllers = true;
 
 	//iventory
-	Inventory = CreateDefaultSubobject<UMasteringInventory>(TEXT("Inventory"));
+//	Inventory = CreateDefaultSubobject<UMasteringInventory>(TEXT("Inventory"));
+
+	//InventroyTEST 장착
+	Inventory = CreateDefaultSubobject<UMasteringInventoryTEST>(TEXT("Inventory"));
 
 }
 
@@ -150,13 +158,17 @@ void AMasterringAcornCharacter::SetupPlayerInputComponent(class UInputComponent*
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AMasterringAcornCharacter::LookUpAtRate);
 
-	PlayerInputComponent->BindAction("InventoryUp", IE_Pressed, this, &AMasterringAcornCharacter::SelectPreviousWeapon);
-	PlayerInputComponent->BindAction("InventoryDown", IE_Pressed, this, &AMasterringAcornCharacter::SelectNextWeapon);
+	/*PlayerInputComponent->BindAction("InventoryUp", IE_Pressed, this, &AMasterringAcornCharacter::SelectPreviousWeapon);
+	PlayerInputComponent->BindAction("InventoryDown", IE_Pressed, this, &AMasterringAcornCharacter::SelectNextWeapon);*/
+
+	PlayerInputComponent->BindAction("InventoryUp", IE_Pressed, this, &AMasterringAcornCharacter::SelectPreviousWeaponTEST);
+	PlayerInputComponent->BindAction("InventoryDown", IE_Pressed, this, &AMasterringAcornCharacter::SelectNextWeaponTEST);
 
 }
 
 void AMasterringAcornCharacter::OnFire()
 {
+	
 	if (GetEquippedWeapon() != nullptr)
 	{
 		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
@@ -322,44 +334,86 @@ bool AMasterringAcornCharacter::EnableTouchscreenMovement(class UInputComponent*
 	return false;
 }
 
-void AMasterringAcornCharacter::EquipWeapon(TSubclassOf<class AMasterringWeapon> Weapon)
+//void AMasterringAcornCharacter::EquipWeapon(TSubclassOf<class AMasterringWeapon> Weapon)
+//{
+//	UWorld* World = GetWorld();
+//	if (World == nullptr)
+//	{
+//		return;
+//	}
+//
+//	if (EquippedWeaponActor != nullptr)
+//	{
+//		World->DestroyActor(EquippedWeaponActor);
+//	}
+//
+//	const FRotator SpawnRotation = GetActorRotation();
+//	const FVector SpawnLocation = GetActorLocation();
+//	FActorSpawnParameters ActorSpawnParmas;
+//	ActorSpawnParmas.SpawnCollisionHandlingOverride = 
+//		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+//
+//	ActorSpawnParmas.Owner = this;
+//
+//	EquippedWeaponActor = Cast<AMasterringWeapon>(World->SpawnActor(
+//		Weapon, &SpawnLocation, &SpawnRotation, ActorSpawnParmas));
+//
+//	if (EquippedWeaponActor != nullptr)
+//	{
+//		EquippedWeaponActor->AttachToComponent(Mesh1P, 
+//			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+//			TEXT("GripPoint"));
+//	}
+//}
+
+void AMasterringAcornCharacter::EquipWeaponTEST(TSubclassOf<class AMasteringWeaponTEST> Weapon)
 {
 	UWorld* World = GetWorld();
 	if (World == nullptr)
 	{
 		return;
 	}
-
 	if (EquippedWeaponActor != nullptr)
 	{
+		//기존아이템 삭제
 		World->DestroyActor(EquippedWeaponActor);
 	}
 
+	//부착시키기
 	const FRotator SpawnRotation = GetActorRotation();
 	const FVector SpawnLocation = GetActorLocation();
-	FActorSpawnParameters ActorSpawnParmas;
-	ActorSpawnParmas.SpawnCollisionHandlingOverride = 
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	ActorSpawnParmas.Owner = this;
+	ActorSpawnParams.Owner = this;
 
-	EquippedWeaponActor = Cast<AMasterringWeapon>(World->SpawnActor(
-		Weapon, &SpawnLocation, &SpawnRotation, ActorSpawnParmas));
+	EquippedWeaponActor = Cast<AMasteringWeaponTEST>(World->SpawnActor(
+		Weapon, &SpawnLocation, &SpawnRotation, ActorSpawnParams));
 
 	if (EquippedWeaponActor != nullptr)
 	{
-		EquippedWeaponActor->AttachToComponent(Mesh1P, 
-			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
-			TEXT("GripPoint"));
+		EquippedWeaponActor->AttachToComponent(Mesh1P, FAttachmentTransformRules(
+			EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 	}
 }
 
-void AMasterringAcornCharacter::SelectNextWeapon()
+void AMasterringAcornCharacter::SelectNextWeaponTEST()
 {
 	Inventory->SelectNextWeapon();
 }
 
-void AMasterringAcornCharacter::SelectPreviousWeapon()
+void AMasterringAcornCharacter::SelectPreviousWeaponTEST()
 {
 	Inventory->SelectPreviousWeapon();
 }
+
+//void AMasterringAcornCharacter::SelectNextWeapon()
+//{
+//	Inventory->SelectNextWeapon();
+//}
+//
+//void AMasterringAcornCharacter::SelectPreviousWeapon()
+//{
+//	Inventory->SelectPreviousWeapon();
+//}
