@@ -28,6 +28,7 @@ AMasteringWeaponTEST::AMasteringWeaponTEST()
 	WeaponMesh->SetupAttachment(RootComponent);
 
 	//Muzzle
+
 	MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
 	MuzzleLocation->SetupAttachment(WeaponMesh);
 }
