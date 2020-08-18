@@ -122,20 +122,25 @@ void ATESTCharacter::LookUpAtRate(float Rate)
 
 void ATESTCharacter::EquipWeaponTEST(TSubclassOf<class ATESTWeaponBase> Weapon)
 {
-	if (GetWorld() == nullptr) return;
+	UWorld* World = GetWorld();
+
+	if (World == nullptr) return;
 	if (EquippedWeaponActor != nullptr)
 	{
-		GetWorld()->DestroyActor(EquippedWeaponActor);
+		World->DestroyActor(EquippedWeaponActor);
 	}
 
 	//ºÎÂø
+	const FRotator SpawnRotation = GetActorRotation();
+	const FVector SpawnLocation = GetActorLocation();
+
 	FActorSpawnParameters Parmas;
 	Parmas.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	Parmas.Owner = this;
 
-	EquippedWeaponActor = Cast<ATESTWeaponBase>(GetWorld()->SpawnActor<ATESTWeaponBase>(Weapon, GetActorLocation(),
-		GetActorRotation(), Parmas));
+	EquippedWeaponActor = Cast<ATESTWeaponBase>(World->SpawnActor(Weapon, &SpawnLocation,
+		&SpawnRotation, Parmas));
 
 	if (EquippedWeaponActor != nullptr)
 	{
@@ -152,6 +157,7 @@ void ATESTCharacter::SelectNextWeaponTEST()
 
 void ATESTCharacter::SelectPreviousWeaponTEST()
 {
+
 	Inventory->SelectPreviousWeapon();
 }
 

@@ -66,20 +66,23 @@ void UTESTInventory::SelectBestWeapon()
 	{
 		SelectWeapon(bestWeapon);
 	}
+
 }
 
 void UTESTInventory::SelectWeapon(TSubclassOf<class ATESTWeaponBase> Weapon)
 {
 	MyOwner->EquipWeaponTEST(Weapon);
 	CurrentWeapon = Weapon;
+	
 }
 
 void UTESTInventory::AddWeapon(TSubclassOf<class ATESTWeaponBase> Weapon, int AmmoCount, uint8 WeaponPower)
 {
+	
 	for (auto WeaponIt = WeaponArray.CreateIterator(); WeaponIt; ++WeaponIt)
 	{
 		FWeaponPropertiesTEST2& currentProps = *WeaponIt;
-		if (currentProps.WeaponClass == CurrentWeapon)
+		if (currentProps.WeaponClass == Weapon)
 		{
 			checkSlow(AmmoCount >= 0);
 			currentProps.Ammo += AmmoCount;
@@ -93,6 +96,8 @@ void UTESTInventory::AddWeapon(TSubclassOf<class ATESTWeaponBase> Weapon, int Am
 	WeaponProps.WeaponPower = WeaponPower;
 
 	WeaponArray.Add(WeaponProps);
+
+	ABLOG(Warning, TEXT("WeaponArray %d"), WeaponArray.Num());
 }
 
 
@@ -124,24 +129,27 @@ void UTESTInventory::ChangeAmmo(TSubclassOf<class ATESTWeaponBase> Weapon, const
 int UTESTInventory::FindCurrentWeaponIndex() const
 {
 	int iCurrentIndex = 0;
-	for (auto WeaponIt = WeaponArray.CreateConstIterator(); WeaponIt; ++WeaponIt)
+	for (auto WeaponIt = WeaponArray.CreateConstIterator();
+			WeaponIt; ++WeaponIt, ++iCurrentIndex)
 	{
 		const FWeaponPropertiesTEST2& currentProps = *WeaponIt;
 		if (currentProps.WeaponClass == CurrentWeapon) break;
 	}
 	checkSlow(iCurrentIndex < WeaponArray.Num());
-	
+	ABLOG(Warning, TEXT("WeaponIndex %d"), iCurrentIndex);
 	return iCurrentIndex;
 }
 
 void UTESTInventory::SelectNextWeapon()
 {
 	int iCurrentIndex = FindCurrentWeaponIndex();
+	
 	if (iCurrentIndex == 0) return;
 
 	if (iCurrentIndex == WeaponArray.Num() - 1)
 	{
 		SelectWeapon(WeaponArray[0].WeaponClass);
+		
 	}
 	else
 	{
@@ -152,6 +160,7 @@ void UTESTInventory::SelectNextWeapon()
 void UTESTInventory::SelectPreviousWeapon()
 {
 	int iCurrentIndex = FindCurrentWeaponIndex();
+
 	if (iCurrentIndex == 0) return;
 	if (iCurrentIndex > 0)
 	{
