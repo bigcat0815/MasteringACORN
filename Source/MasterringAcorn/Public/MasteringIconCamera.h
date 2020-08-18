@@ -37,7 +37,7 @@ protected:
 	bool bInitialied = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString WeaponsPath = "MyContent/Item/TESTWeapon/";
+	FString WeaponsPath = "MyContent/Item/TESTWeapon";
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ShotDelay = 0.4f;
