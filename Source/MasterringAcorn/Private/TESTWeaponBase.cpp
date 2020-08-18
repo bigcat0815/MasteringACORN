@@ -11,6 +11,7 @@
 #include "GameFramework/InputSettings.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "TESTInventory.h"
 
 // Sets default values
 ATESTWeaponBase::ATESTWeaponBase()
@@ -43,6 +44,39 @@ void ATESTWeaponBase::BeginPlay()
 void ATESTWeaponBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+}
+
+void ATESTWeaponBase::Fire(FRotator ControlRotation, UAnimInstance* AnimInst, UTESTInventory* Inventory)
+{
+	if (ProjectileClass != nullptr)
+	{
+		if (GetWorld() != nullptr)
+		{
+			const FVector SpawnLocation =
+				((MuzzleLocation != nullptr) ? MuzzleLocation->GetComponentLocation() :
+					GetActorLocation()) + ControlRotation.RotateVector(GunOffset);
+
+			FActorSpawnParameters ActorSpawnParms;
+			ActorSpawnParms.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+			GetWorld()->SpawnActor<AMasterringAcornProjectile>(ProjectileClass, SpawnLocation,
+				ControlRotation, ActorSpawnParms);
+		}
+	}
+
+	if (FireSound != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+	}
+
+	if (FireAnimation != nullptr)
+	{
+		AnimInst->Montage_Play(FireAnimation, 1.f);
+	}
+	
+	Inventory->ChangeAmmo(GetClass(), -1);
 
 }
 

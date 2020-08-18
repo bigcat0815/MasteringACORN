@@ -44,4 +44,7 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	class USceneComponent* MuzzleLocation;
 
+	//인벤토리를 만든후 추가
+	void Fire(FRotator ControlRotation, class UAnimInstance* AnimInst,
+		class UTESTInventory* Inventory);
 };
