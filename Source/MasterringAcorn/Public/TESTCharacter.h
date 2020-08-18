@@ -61,4 +61,20 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+
+//인벤토리를 위한 데이터
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GamePlay)
+	class UTESTInventory* Inventory;
+
+	class ATESTWeaponBase* EquippedWeaponActor;
+
+	void EquipWeaponTEST(TSubclassOf<class ATESTWeaponBase> Weapon);
+
+	FORCEINLINE class ATESTWeaponBase* GetEquippedWeapon() const { return EquippedWeaponActor; }
+	FORCEINLINE class UTESTInventory* GetInventory() const { return Inventory; }
+
+	void SelectNextWeaponTEST();
+	void SelectPreviousWeaponTEST();
 };

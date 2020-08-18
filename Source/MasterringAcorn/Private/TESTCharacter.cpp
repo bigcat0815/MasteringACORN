@@ -10,6 +10,9 @@
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "TESTInventory.h"
+#include "TESTWeaponBase.h"
+
 
 // Sets default values
 ATESTCharacter::ATESTCharacter()
@@ -33,6 +36,9 @@ ATESTCharacter::ATESTCharacter()
 	Mesh1P->CastShadow = false;
 	Mesh1P->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-0.5f, -4.4f, -155.7f));
+
+	//inventory
+	Inventory = CreateDefaultSubobject<UTESTInventory>(TEXT("TESTINVENTORY"));
 
 }
 
@@ -71,10 +77,21 @@ void ATESTCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ATESTCharacter::LookUpAtRate);
 
+
+	PlayerInputComponent->BindAction("InventoryUp", IE_Pressed, this, &ATESTCharacter::SelectPreviousWeaponTEST);
+	PlayerInputComponent->BindAction("InventoryDown", IE_Pressed, this, &ATESTCharacter::SelectNextWeaponTEST);
+
 }
 
 void ATESTCharacter::OnFire()
 {
+	if (GetEquippedWeapon() != nullptr)
+	{
+		UAnimInstance* Anim = Mesh1P->GetAnimInstance();
+
+		GetEquippedWeapon()->Fire(GetControlRotation(),Anim,Inventory);
+	}
+	
 }
 
 void ATESTCharacter::MoveForward(float Val)
@@ -101,5 +118,40 @@ void ATESTCharacter::TurnAtRate(float Rate)
 void ATESTCharacter::LookUpAtRate(float Rate)
 {
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ATESTCharacter::EquipWeaponTEST(TSubclassOf<class ATESTWeaponBase> Weapon)
+{
+	if (GetWorld() == nullptr) return;
+	if (EquippedWeaponActor != nullptr)
+	{
+		GetWorld()->DestroyActor(EquippedWeaponActor);
+	}
+
+	//ºÎÂø
+	FActorSpawnParameters Parmas;
+	Parmas.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	Parmas.Owner = this;
+
+	EquippedWeaponActor = Cast<ATESTWeaponBase>(GetWorld()->SpawnActor<ATESTWeaponBase>(Weapon, GetActorLocation(),
+		GetActorRotation(), Parmas));
+
+	if (EquippedWeaponActor != nullptr)
+	{
+		EquippedWeaponActor->AttachToComponent(Mesh1P,
+			FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+			TEXT("GripPoint"));
+	}
+}
+
+void ATESTCharacter::SelectNextWeaponTEST()
+{
+	Inventory->SelectNextWeapon();
+}
+
+void ATESTCharacter::SelectPreviousWeaponTEST()
+{
+	Inventory->SelectPreviousWeapon();
 }
 
