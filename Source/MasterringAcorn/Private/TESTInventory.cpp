@@ -27,7 +27,7 @@ UTESTInventory::UTESTInventory()
 void UTESTInventory::BeginPlay()
 {
 	Super::BeginPlay();
-
+	 
 	// ...
 	if (DefaultWeapon != nullptr)
 	{
@@ -66,15 +66,38 @@ void UTESTInventory::SelectBestWeapon()
 	{
 		SelectWeapon(bestWeapon);
 	}
-
 }
 
 void UTESTInventory::SelectWeapon(TSubclassOf<class ATESTWeaponBase> Weapon)
 {
 	MyOwner->EquipWeaponTEST(Weapon);
 	CurrentWeapon = Weapon;
-	
 }
+
+//void UTESTInventory::SelectWeapon(FWeaponPropertiesTEST2 Weapon)
+//{
+//	//OnSelectedWeaponChanged.Broadcast(Weapon);
+//	//MyOwner->EquipWeaponTEST(Weapon.WeaponClass);
+//	//CurrentWeapon = Weapon.WeaponClass;
+//	//
+//}
+//
+//void UTESTInventory::AddWeapon(const FWeaponPropertiesTEST2& Properties)
+//{
+//	int foundIndex = WeaponArray.Find(Properties);
+//	if (foundIndex != INDEX_NONE)
+//	{
+//		FWeaponPropertiesTEST2& currentProps = WeaponArray[foundIndex];
+//		checkSlow(Properties.Ammo >= 0 || Properties.Ammo == UNLIMITED_AMMO);
+//		currentProps.Ammo += Properties.Ammo;
+//	}
+//	else
+//	{
+//		WeaponArray.Add(Properties);
+//		OnWeaponAdded.Broadcast(Properties);
+//	}
+//
+//}
 
 void UTESTInventory::AddWeapon(TSubclassOf<class ATESTWeaponBase> Weapon, int AmmoCount, uint8 WeaponPower)
 {

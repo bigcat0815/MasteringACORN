@@ -4,6 +4,7 @@
 
 #include "MasterringAcorn.h"
 #include "Components/ActorComponent.h"
+#include "TESTWeaponBase.h"
 #include "TESTInventory.generated.h"
 
 
@@ -49,10 +50,12 @@ public:
 	void SelectBestWeapon();
 
 	//인벤토리에서 무기선택
+	//void SelectWeapon(FWeaponPropertiesTEST2 Weapon);
 	void SelectWeapon(TSubclassOf<class ATESTWeaponBase> Weapon);
 
 	//인벤토리에 무기추가
 	void AddWeapon(TSubclassOf<class ATESTWeaponBase> Weapon, int AmmoCount, uint8 WeaponPower);
+	//void AddWeapon(const FWeaponPropertiesTEST2 &Properties);
 
 	//설정할 수 있는 기본 무기 추가
 	void AddDefaultWeapon();
@@ -62,8 +65,24 @@ public:
 		return CurrentWeapon;
 	}
 
+	FORCEINLINE TArray<FWeaponPropertiesTEST2>& GetWeaponsArray() { return WeaponArray; }
+
+	FORCEINLINE int GetCurrentWeaponPower() const { return CurrentWeaponPower; }
+
+
+
 	void ChangeAmmo(TSubclassOf<class ATESTWeaponBase> Weapon,
 		const int ChangeAmount);
+
+
+	//DECLARE_EVENT_OneParam(UTESTInventory, FSelectedWeaponChanged, FWeaponPropertiesTEST2);
+	//FSelectedWeaponChanged OnSelectedWeaponChanged;
+
+	//DECLARE_EVENT_OneParam(UTESTInventory, FWeaponAdded, FWeaponPropertiesTEST2);
+	//FSelectedWeaponChanged OnWeaponAdded;
+
+	//DECLARE_EVENT_OneParam(UTESTInventory, FWeaponRemoved, FWeaponPropertiesTEST2);
+	//FSelectedWeaponChanged OnWeaponRemoved;
 
 protected:
 	TArray<FWeaponPropertiesTEST2> WeaponArray;
